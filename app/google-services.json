@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "428499250573",
+    "project_id": "share-hub-90c17",
+    "storage_bucket": "share-hub-90c17.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:428499250573:android:55a6c71b7db2322fc1a1c4",
+        "android_client_info": {
+          "package_name": "com.example.sharehub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "428499250573-6eejoupb3nigthg4q3pmi1j90bp57vg7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDst_j5mmaLQ4qNtmj1aVNDq9knS9pIG4A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "428499250573-6eejoupb3nigthg4q3pmi1j90bp57vg7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
