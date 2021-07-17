@@ -12,4 +12,7 @@
     <string name="title_activity_share_room_materials">ShareRoomMaterials</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
+    <string name="videos_fragment">Videos Fragment</string>
+    <string name="links_fragment">Links Fragment</string>
+    <string name="files_fragment">Files Fragment</string>
 </resources>

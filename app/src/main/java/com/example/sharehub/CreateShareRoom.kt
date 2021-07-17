@@ -69,7 +69,6 @@ class CreateShareRoom : AppCompatActivity() {
             }
         }
 
-
         val intent = Intent(applicationContext,ShareRoom::class.java).apply {
             putExtra("roomId",roomId.toString())
         }
