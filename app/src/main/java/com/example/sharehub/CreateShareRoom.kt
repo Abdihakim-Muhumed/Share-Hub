@@ -3,6 +3,7 @@ package com.example.sharehub
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -57,24 +58,22 @@ class CreateShareRoom : AppCompatActivity() {
         val roomId = databaseReference?.push()?.key
         val shareRoom = ShareRoomModel(roomId,title,description,currentUid)
         if (roomId != null) {
-            databaseReference?.child(roomId)?.setValue(shareRoom)?.addOnCompleteListener {
+            databaseReference?.child(roomId)?.setValue(shareRoom)?.addOnSuccessListener {
                 Toast.makeText(applicationContext,"Share Room creation successful!",Toast.LENGTH_LONG).show()
+                //adding member to share_room in database
+                if (currentUid != null) {
+                    //adding share_room to user in database
+                    databaseReferenceUser?.child(currentUid)?.child("rooms")?.child(roomId)?.setValue(roomId)
+                        ?.addOnSuccessListener {
+                            Log.d("addingRoomToUserprofile","Room added to user profile!")
+                        }
+                }
+                //openning the share room
+                val intent = Intent(applicationContext,ShareRoom::class.java).apply {
+                    putExtra("roomId",roomId)
+                }
+                startActivity(intent)
             }
         }
-        //adding member to share_room in database
-        if (currentUid != null) {
-            if (roomId != null) {
-                //adding share_room to user in database
-                databaseReferenceUser?.child(currentUid)?.child("rooms")?.child(roomId)?.setValue(roomId)
-            }
-        }
-
-        val intent = Intent(applicationContext,ShareRoom::class.java).apply {
-            putExtra("roomId",roomId.toString())
-        }
-        startActivity(intent)
     }
-    /*private fun randomCode(): String = List(8) {
-        (('a'..'z') + ('A'..'Z') + ('0'..'9')).random()
-    }.joinToString("")*/
 }

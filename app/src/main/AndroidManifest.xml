@@ -9,11 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShareHub">
-        <activity
-            android:name=".ShareRoomMaterials"
-            android:label="@string/title_activity_share_room_materials"
-            android:theme="@style/Theme.ShareHub.NoActionBar"></activity>
-        <activity android:name=".ShareRoom"></activity>
+        <activity android:name=".EmptyActivity"></activity>
+        <activity android:name=".ShareRoom" />
         <activity android:name=".JoinShareRoom" />
         <activity android:name=".CreateShareRoom" />
         <activity android:name=".authentication.PasswordReset" />

@@ -6,22 +6,82 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ShareRoom">
-  <com.google.android.material.tabs.TabLayout
-      android:id="@+id/tabLayout"
+  <RelativeLayout
+      style="@style/parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:weightSum="12">
+
+      <LinearLayout
+          style="@style/parent"
+          android:layout_height="80dp"
+          android:layout_weight="3"
+          android:background="@drawable/login_shape_bk"
+          android:orientation="vertical">
+
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+    <ScrollView
+        style="@style/parent">
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_alignParentTop="true"
+          android:orientation="vertical"
+          android:layout_marginTop="10dp"
+          android:layout_marginRight="30dp"
+          android:layout_marginLeft="30dp">
+
+
+        <TextView
+            android:id="@+id/homeTitle"
+            style="@style/headerText"
+            android:layout_gravity="center"
+            android:text="Room title1"
+            android:layout_marginTop="40dp"/>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabTextColor="@color/primaryTextColor"
+            app:tabMode="scrollable"
+            tools:ignore="MissingConstraints"
+            app:tabGravity="center"
+            >
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tabLayout"
+            >
+
+        </androidx.viewpager.widget.ViewPager>
+
+      </LinearLayout>
+
+    </ScrollView>
+
+  </RelativeLayout>
+
+  <com.google.android.material.bottomnavigation.BottomNavigationView
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      app:tabTextColor="@android:color/background_light"
-      >
-
-  </com.google.android.material.tabs.TabLayout>
-
-  <androidx.viewpager.widget.ViewPager
-      android:id="@+id/viewPager"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      app:layout_constraintTop_toBottomOf="@+id/tabLayout">
-
-  </androidx.viewpager.widget.ViewPager>
-
+      android:layout_height="60dp"
+      android:layout_alignParentBottom="true"
+      app:menu="@menu/bottom_shareroom_nav"
+      android:background="@drawable/bottom_nav_background"
+      android:id="@+id/bottomNAv"
+      android:visibility="visible"
+      app:labelVisibilityMode="labeled"
+      app:itemTextColor="@color/whiteTextColor"
+      />
 
 </RelativeLayout>

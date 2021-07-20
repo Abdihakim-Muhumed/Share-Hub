@@ -51,12 +51,17 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
-                        Toast.makeText(baseContext, "Authentication failed!",
+                        Toast.makeText(baseContext, "Authentication failed! Try again with the right credentials.",
                             Toast.LENGTH_SHORT).show()
                     }
                 }
         }
 
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
     private fun updateUi(user: FirebaseUser?) {
         val intent = Intent(applicationContext,Home::class.java)
