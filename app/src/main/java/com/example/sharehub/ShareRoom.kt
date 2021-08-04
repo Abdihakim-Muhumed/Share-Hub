@@ -39,7 +39,7 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
     private var databaseReference: DatabaseReference?=null
     private var databaseReferenceUser: DatabaseReference?=null
     private var databaseReferenceLinks: DatabaseReference?=null
-
+    val roomId : String?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share_room)
@@ -56,7 +56,8 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
         shareRoom = ShareRoomModel("1","Sample Share Room","This is a sample share room and it does not represent a real share room","1")
         //getting room id from intent
         val roomId = intent.getStringExtra("roomId").toString()
-        Log.d("roomIdFromIntent","roomId " +roomId+"found ")
+        Log.d("roomIdFromIntent","roomId " +roomId+" found ")
+
         //getting room from database
         val databaseReference = FirebaseDatabase.getInstance().getReference("share_rooms")
         databaseReference.addValueEventListener(object : ValueEventListener{
@@ -105,13 +106,13 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
             }
         })
         //displaying resource links
+            //setting static links
         roomTitle.text = shareRoom.title
         val link1 = LinksModel("2","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
         val link2 = LinksModel("3","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
         val link3 = LinksModel("4","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
         val link4 = LinksModel("5","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
         val link5 = LinksModel("6","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
-        //val linkList = mutableListOf<LinksModel>()
         linkList.add(link1)
         linkList.add(link2)
         linkList.add(link3)
@@ -132,6 +133,7 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
 
     }
 
+    //bottom menu items on selected
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menuHome -> {
@@ -150,6 +152,7 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
         return true
     }
 
+    //dialog to add new resource links
     private fun showLinkDialog() {
         val dialogView = layoutInflater.inflate(R.layout.add_link_dialog, null)
         val customDialog = AlertDialog.Builder(this)
@@ -178,10 +181,6 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
                     //getting room id from intent
                     val roomId = intent.getStringExtra("roomId").toString()
                     Log.d("roomIdFromIntent","roomId " +roomId+"found ")
-                    val databaseReference = FirebaseDatabase.getInstance().getReference("share_rooms")
-                    databaseReference.child(roomId).child("links").child(linkId).setValue(linkId).addOnSuccessListener {
-                        Toast.makeText(applicationContext,"Link added to the room",Toast.LENGTH_LONG).show()
-                    }
                     val linkModel = uid?.let { it1 -> LinksModel(linkId,title,link, it1,roomId) }
                     if (linkModel != null) {
                         addLink(linkModel,linkId)
@@ -191,11 +190,15 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
             }
         }
     }
+
+    //function to add link to database
     private fun addLink(linkModel: LinksModel, linkId: String?){
         if (linkId != null) {
             databaseReferenceLinks?.child(linkId)?.setValue(linkModel)?.addOnSuccessListener {
                 Log.d("AddLink","Link added")
                 //Toast.makeText(applicationContext,"Link Added!!!",Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext,"Link added to the room",Toast.LENGTH_LONG).show()
+
             }
         }
     }

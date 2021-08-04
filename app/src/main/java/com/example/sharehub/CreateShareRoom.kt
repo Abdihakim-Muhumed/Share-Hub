@@ -50,6 +50,8 @@ class CreateShareRoom : AppCompatActivity() {
             }
         }
     }
+
+    //function create a share room
     private fun createShareRoom(title: String, description: String) {
         //val currentUser= auth.currentUser
         val currentUid = auth.currentUser?.uid

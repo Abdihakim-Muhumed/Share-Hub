@@ -17,13 +17,13 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:id="@+id/roomInfo_layout">
 
             <ImageView
                 android:id="@+id/room_image"
-                android:layout_width="381dp"
-                android:layout_height="100dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
@@ -32,13 +32,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/room_title"
                     style="@style/viewParent"
-                    android:layout_margin="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"
                     android:text="SHARE ROOM1"
                     android:textColor="@color/colorPrimary"
                     android:textSize="16dp" />
@@ -46,26 +46,25 @@
                 <TextView
                     android:id="@+id/room_master"
                     style="@style/viewParent"
-                    android:layout_marginLeft="100dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
                     android:text="-By Andrew Maina"
                     android:textColor="@color/orange"
                     android:textSize="16dp" />
 
             </LinearLayout>
+
         </LinearLayout>
         <Button
             android:id="@+id/btnCopyCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/loginViewsMargin"
+            android:layout_gravity="end"
             android:background="@drawable/rounded_corner_blue"
             android:backgroundTint="@color/orange"
             android:backgroundTintMode="@color/orange"
             android:text="Copy Code"
-            android:textSize="12dp"
+            android:textSize="8dp"
+            android:drawableLeft="@drawable/icon_copy_white"
             android:visibility="visible" />
     </LinearLayout>
 

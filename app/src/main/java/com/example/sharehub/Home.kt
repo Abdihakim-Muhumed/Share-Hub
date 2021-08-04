@@ -20,6 +20,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.layout_roomcards.*
@@ -34,27 +35,30 @@ class Home : AppCompatActivity() , BottomNavigationView.OnNavigationItemSelected
         setContentView(R.layout.activity_home)
         //firebase product initialization
         auth = FirebaseAuth.getInstance()
-        val databaseReference = FirebaseDatabase.getInstance().getReference("users")
+        val databaseReference = Firebase.database.reference
         val databaseReferenceRooms = FirebaseDatabase.getInstance().getReference("share_rooms")
         //bottom navigation
         bottomNavigationView = findViewById(R.id.bottomNAv)
         bottomNavigationView.setOnItemSelectedListener(this)
 
-        //fetching share rooms
+        //fetching share rooms and displaying them
         val roomIds = mutableListOf<String?>()
         val roomList = mutableListOf<ShareRoomModel?>()
         val currentUid = auth.currentUser?.uid
         if (currentUid != null) {
-            databaseReference.child(currentUid).child("rooms").addValueEventListener(object : ValueEventListener{
+            databaseReference.child("users").child(currentUid).child("rooms").addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    //fetching roomIds from the user
                     for (h in snapshot.children){
                         val roomId = h.value.toString()
                         Log.d("roomId","Room id found: "+roomId)
                         roomIds.add(roomId)
                     }
+
+                    //using roomIds to fetch rooms
                     for (roomId in roomIds){
                         if (roomId != null) {
-                            databaseReferenceRooms.child(roomId).addValueEventListener(object : ValueEventListener{
+                            databaseReference.child("share_rooms").child(roomId).addValueEventListener(object : ValueEventListener{
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     if (snapshot!!.exists()){
                                         val room = snapshot.getValue(ShareRoomModel::class.java)
@@ -72,8 +76,10 @@ class Home : AppCompatActivity() , BottomNavigationView.OnNavigationItemSelected
                         else{
                             Log.d("roomIds","roomIds is empty!")
                         }
+
                     }
-                    //layout manager
+
+                    //displaying rooms using layout manager
                     if (roomList.isNotEmpty()){
                         layoutManager = LinearLayoutManager(this@Home)
                         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view_rooms)
@@ -99,6 +105,7 @@ class Home : AppCompatActivity() , BottomNavigationView.OnNavigationItemSelected
 
     }
 
+    //bottom navigation when a menu item is selected
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menuCreateRoom -> {

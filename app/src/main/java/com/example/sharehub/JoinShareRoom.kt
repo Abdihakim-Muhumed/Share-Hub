@@ -34,14 +34,14 @@ class JoinShareRoom : AppCompatActivity() {
                 Toast.makeText(applicationContext,"Enter Room Code !",Toast.LENGTH_LONG).show()
 
             }else{
+                //Adding room to the user table
                 val roomId = databaseReference.child(roomCode).get()
                 if (roomId.isSuccessful){
                     if (currentUid != null) {
-                        //databaseReference?.child(roomCode)?.child("members")?.child(currentUid)?.setValue(currentUid)
                         //adding room id to user profile
                         val databaseReferenceUser = FirebaseDatabase.getInstance().getReference("users")
                         databaseReferenceUser?.child(currentUid)?.child("rooms")?.child(roomId.toString())?.setValue(roomId)
-                        //opening the share room acrivity
+                        //opening the share room activity
                         val intent = Intent(applicationContext,ShareRoom::class.java).apply {
                             putExtra("roomId",roomCode)
                         }
@@ -50,9 +50,6 @@ class JoinShareRoom : AppCompatActivity() {
                 }else {
                     Toast.makeText(applicationContext,"Share Room does not exist!!!",Toast.LENGTH_LONG).show()
                 }
-
-                //to join a room
-
             }
         }
         //if user wants to create a room instead of joining one
