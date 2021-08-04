@@ -41,48 +41,62 @@ class Home : AppCompatActivity() , BottomNavigationView.OnNavigationItemSelected
         bottomNavigationView.setOnItemSelectedListener(this)
 
         //fetching share rooms
+        val roomIds = mutableListOf<String?>()
         val roomList = mutableListOf<ShareRoomModel?>()
         val currentUid = auth.currentUser?.uid
         if (currentUid != null) {
             databaseReference.child(currentUid).child("rooms").addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    roomList.clear()
                     for (h in snapshot.children){
                         val roomId = h.value.toString()
                         Log.d("roomId","Room id found: "+roomId)
-                        databaseReferenceRooms.child(roomId).addValueEventListener(object : ValueEventListener{
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                if (snapshot!!.exists()){
-                                    val room = snapshot.getValue(ShareRoomModel::class.java)
-                                    if (room != null) {
-                                        Log.d("roomFound","True: "+ room.title)
-                                        roomList.add(room)
+                        roomIds.add(roomId)
+                    }
+                    for (roomId in roomIds){
+                        if (roomId != null) {
+                            databaseReferenceRooms.child(roomId).addValueEventListener(object : ValueEventListener{
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    if (snapshot!!.exists()){
+                                        val room = snapshot.getValue(ShareRoomModel::class.java)
+                                        if (room != null) {
+                                            Log.d("roomFound","True: "+ room.title)
+                                            roomList.add(room)
+                                        }
                                     }
                                 }
-                            }
-                            override fun onCancelled(error: DatabaseError) {
-                                TODO("Not yet implemented")
-                            }
-                        })
+                                override fun onCancelled(error: DatabaseError) {
+                                    TODO("Not yet implemented")
+                                }
+                            })
+                        }
+                        else{
+                            Log.d("roomIds","roomIds is empty!")
+                        }
                     }
+                    //layout manager
+                    if (roomList.isNotEmpty()){
+                        layoutManager = LinearLayoutManager(this@Home)
+                        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view_rooms)
+                        recyclerView.layoutManager = layoutManager
+                        adapter = RecyclerViewAdapterRooms(this@Home,roomList)
+                        Log.d("Adapter","Recyclerviewadapter created successfully!!!")
+                        recyclerView.adapter = adapter
+                    }
+                    else if (roomList.isEmpty()){
+                        Log.d("roomList","roomList is empty!!")
+                        homeTitle.text = "No Share room joined yet!"
+                    }
+
                 }
                 override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
                 }
+
             })
-            //layout manager
-            if (roomList.isNotEmpty()){
-                layoutManager = LinearLayoutManager(this@Home)
-                val recyclerView = findViewById<RecyclerView>(R.id.recycler_view_rooms)
-                recyclerView.layoutManager = layoutManager
-                adapter = RecyclerViewAdapterRooms(this@Home,roomList)
-                Log.d("Adapter","Recyclerviewadapter created successfully!!!")
-                recyclerView.adapter = adapter
-            }
-            else if (roomList.isEmpty()){
-                homeTitle.text = "No Share room joined yet!"
-            }
+
+
         }
+
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -109,4 +123,3 @@ class Home : AppCompatActivity() , BottomNavigationView.OnNavigationItemSelected
         finish()
     }
 }
-

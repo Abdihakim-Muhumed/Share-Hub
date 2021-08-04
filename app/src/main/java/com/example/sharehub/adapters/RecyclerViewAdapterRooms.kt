@@ -45,8 +45,7 @@ class RecyclerViewAdapterRooms(private val context: Context,private val roomList
 
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
-        val v = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.layout_roomcards, viewGroup, false)
+        val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.layout_roomcards, viewGroup, false)
 
         Log.d("viewholdercreation","Viewholder was created!")
         //button copy room code
@@ -59,6 +58,7 @@ class RecyclerViewAdapterRooms(private val context: Context,private val roomList
             val myClipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val myClip: ClipData = ClipData.newPlainText("Code copied", code)
             myClipboard.setPrimaryClip(myClip)
+            Toast.makeText(context,"Room code copied to clipboard!",Toast.LENGTH_LONG).show()
         }
         v.roomInfo_layout.setOnClickListener {
             val intent = Intent(context,ShareRoom::class.java).apply {

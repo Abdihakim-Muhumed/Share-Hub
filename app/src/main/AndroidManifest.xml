@@ -9,7 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShareHub">
-        <activity android:name=".EmptyActivity"></activity>
+        <activity android:name=".CustomListView"></activity>
+        <activity android:name=".custom" />
+        <activity android:name=".AddLink" />
+        <activity android:name=".EmptyActivity" />
         <activity android:name=".ShareRoom" />
         <activity android:name=".JoinShareRoom" />
         <activity android:name=".CreateShareRoom" />

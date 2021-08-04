@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:id="@+id/roomInfo_layout">
+
             <ImageView
                 android:id="@+id/room_image"
                 android:layout_width="381dp"
@@ -26,8 +27,6 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
                 android:src="@drawable/share_room_icon" />
 
             <LinearLayout

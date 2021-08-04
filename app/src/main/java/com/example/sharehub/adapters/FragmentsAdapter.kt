@@ -1,5 +1,6 @@
 package com.example.sharehub.adapters
 
+import android.app.Activity
 import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -9,14 +10,14 @@ import com.example.sharehub.fragments.LinksFragment
 import com.example.sharehub.fragments.VideosFragment
 import com.example.sharehub.models.ShareRoomModel
 
-class FragmentsAdapter(private val myContext: Context, fm: FragmentManager, private val room: ShareRoomModel) : FragmentPagerAdapter(fm) {
+class FragmentsAdapter(private val myContext: Activity, fm: FragmentManager, private val room: ShareRoomModel) : FragmentPagerAdapter(fm) {
     // creating the fragment tabs
     override fun getItem(position: Int): Fragment {
-        when (position) {
+        return when (position) {
             0 -> {
-                return LinksFragment(myContext,room.id!!)
+                LinksFragment(myContext,room.id!!)
             }
-            else -> return LinksFragment(myContext,room.id!!)
+            else -> LinksFragment(myContext,room.id!!)
         }
     }
 

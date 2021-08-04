@@ -1,33 +1,55 @@
 package com.example.sharehub
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import androidx.viewpager.widget.ViewPager
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ListView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.example.sharehub.adapters.FragmentsAdapter
+import com.example.sharehub.adapters.LinkListAdapter
+import com.example.sharehub.adapters.PagerAdapter
 import com.example.sharehub.authentication.LoginActivity
+import com.example.sharehub.models.LinksModel
 import com.example.sharehub.models.ShareRoomModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_share_room.*
+import kotlinx.android.synthetic.main.add_link_dialog.*
 
 class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelectedListener {
     //var tabLayout: TabLayout? = null
     //var viewPager: ViewPager? = null
     private lateinit var shareRoom: ShareRoomModel
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var auth: FirebaseAuth
+    private  var firebaseStore: FirebaseStorage?=null
+    private var storageReference: StorageReference?=null
+    private var databaseReference: DatabaseReference?=null
+    private var databaseReferenceUser: DatabaseReference?=null
+    private var databaseReferenceLinks: DatabaseReference?=null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share_room)
-
+        //firebase product initialization
+        auth = FirebaseAuth.getInstance()
+        firebaseStore = FirebaseStorage.getInstance()
+        storageReference = FirebaseStorage.getInstance().getReference("imageResources")
+        databaseReferenceLinks = FirebaseDatabase.getInstance().getReference("links")
+        databaseReferenceUser = FirebaseDatabase.getInstance().getReference("users")
+        //navigationview component initialization.
         bottomNavigationView = findViewById(R.id.bottomNAv)
         bottomNavigationView.setOnItemSelectedListener(this)
 
@@ -39,13 +61,13 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
         val databaseReference = FirebaseDatabase.getInstance().getReference("share_rooms")
         databaseReference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                for (h in snapshot.children) {
+                loop@ for (h in snapshot.children) {
                     val room =  snapshot.getValue(ShareRoomModel::class.java)
                     val id = room?.id
                     if(id == roomId){
                         shareRoom = room
                         Log.d("ShareroomFound","Shareroom "+shareRoom.title+" found.")
-                        break
+                        break@loop
                     }
                 }
             }
@@ -54,12 +76,60 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
             }
         })
 
-        val fragmentAdapter = FragmentsAdapter(this,supportFragmentManager,shareRoom)
-        if (fragmentAdapter!=null){
-            Log.d("FragmentsAdapter","adapter created!!")
+        //Fetching resources links
+        val linkList = mutableListOf<LinksModel>()
+        val databaseReferenceLinks = FirebaseDatabase.getInstance().getReference("links")
+        //val databaseReference = FirebaseDatabase.getInstance().getReference("share_rooms")
+        databaseReference.child(roomId).child("links").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (h in snapshot.children){
+                    val linkId= h.value.toString()
+                    databaseReferenceLinks.child(linkId).addValueEventListener(object : ValueEventListener{
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val link = snapshot.getValue(LinksModel::class.java)
+                            if (link != null) {
+                                Log.d("linksfetching","link found : " + link.title)
+                                linkList.add(link)
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            TODO("Not yet implemented")
+                        }
+
+                    })
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+        //displaying resource links
+        roomTitle.text = shareRoom.title
+        val link1 = LinksModel("2","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
+        val link2 = LinksModel("3","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
+        val link3 = LinksModel("4","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
+        val link4 = LinksModel("5","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
+        val link5 = LinksModel("6","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
+        //val linkList = mutableListOf<LinksModel>()
+        linkList.add(link1)
+        linkList.add(link2)
+        linkList.add(link3)
+        linkList.add(link4)
+        linkList.add(link5)
+        Log.d("linkList","found links in the list")
+        val tittles = mutableListOf<String>()
+        for (link in linkList){
+            tittles.add("title")
         }
-        viewPager.adapter = fragmentAdapter
-        tabLayout.setupWithViewPager(viewPager)
+        //displaying links using list view
+        val myListAdapter = LinkListAdapter(this@ShareRoom,tittles,linkList)
+        Log.d("adapter","adapter object created")
+        val listviewLinks = findViewById<ListView>(R.id.listviewLinks)
+        listviewLinks.adapter = myListAdapter
+        Log.d("listAdapter","Adapter set!!!")
+
+
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -69,6 +139,7 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
                 startActivity(intentHome)
             }
             R.id.menuAddResource -> {
+                showLinkDialog()
             }
             R.id.menuLogout -> {
                 Firebase.auth.signOut()
@@ -78,4 +149,75 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
         }
         return true
     }
+
+    private fun showLinkDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.add_link_dialog, null)
+        val customDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .show()
+        val btnDismiss = dialogView.findViewById<Button>(R.id.btnCancelLink)
+        val editTitle = dialogView.findViewById<EditText>(R.id.editTextTitle)
+        val editLink = dialogView.findViewById<EditText>(R.id.editTextLink)
+        val btnSubmit = dialogView.findViewById<Button>(R.id.btnSubmitLink)
+        btnDismiss.setOnClickListener {
+            customDialog.dismiss()
+        }
+        btnSubmit.setOnClickListener {
+            val title = editTitle.text.toString()
+            val link = editLink.text.toString()
+            val uid = auth.currentUser?.uid
+            if (title.isEmpty()){
+                Toast.makeText(applicationContext,"Title cannot be empty!!!",Toast.LENGTH_LONG).show()
+            }
+            else if (link.isEmpty()){
+                Toast.makeText(applicationContext,"Provide the link!!!",Toast.LENGTH_LONG).show()
+            }
+            else{
+                val linkId = databaseReferenceLinks?.push()?.key
+                if (linkId != null) {
+                    //getting room id from intent
+                    val roomId = intent.getStringExtra("roomId").toString()
+                    Log.d("roomIdFromIntent","roomId " +roomId+"found ")
+                    val databaseReference = FirebaseDatabase.getInstance().getReference("share_rooms")
+                    databaseReference.child(roomId).child("links").child(linkId).setValue(linkId).addOnSuccessListener {
+                        Toast.makeText(applicationContext,"Link added to the room",Toast.LENGTH_LONG).show()
+                    }
+                    val linkModel = uid?.let { it1 -> LinksModel(linkId,title,link, it1,roomId) }
+                    if (linkModel != null) {
+                        addLink(linkModel,linkId)
+                    }
+                    customDialog.dismiss()
+                }
+            }
+        }
+    }
+    private fun addLink(linkModel: LinksModel, linkId: String?){
+        if (linkId != null) {
+            databaseReferenceLinks?.child(linkId)?.setValue(linkModel)?.addOnSuccessListener {
+                Log.d("AddLink","Link added")
+                //Toast.makeText(applicationContext,"Link Added!!!",Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 }
+
+
+
+//viewpager2
+/*val words = arrayListOf("One",)
+val pagerAdapter = PagerAdapter(this,words,linkList)
+viewPager.adapter = pagerAdapter
+viewPager.offscreenPageLimit = 3
+TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+    tab.text = "${position + 1}"
+    if (position==0){
+        tab.text = "Links"
+    }
+}.attach()*/
+
+
+//viewpager
+/*val fragmentAdapter = FragmentsAdapter(this,supportFragmentManager,shareRoom)
+if (fragmentAdapter!=null){
+    Log.d("FragmentsAdapter","adapter created!!")
+}*/

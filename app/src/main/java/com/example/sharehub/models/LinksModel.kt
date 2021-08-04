@@ -1,5 +1,8 @@
 package com.example.sharehub.models
 
-class LinksModel(private val id: String, private val title:String, private val link: String, private val sharingUid: String) {
+import com.google.firebase.firestore.IgnoreExtraProperties
+
+@IgnoreExtraProperties
+data class LinksModel(val id: String?=null, val title:String?=null, val link: String?=null, val sharingUid: String?=null,val roomId:String?=null) {
 
 }

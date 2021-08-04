@@ -10,7 +10,7 @@
       style="@style/parent">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:weightSum="12">
 
@@ -20,6 +20,15 @@
           android:layout_weight="3"
           android:background="@drawable/login_shape_bk"
           android:orientation="vertical">
+        <TextView
+            android:id="@+id/roomTitle"
+            style="@style/headerText"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="0dp"
+            android:text="Room title1"
+
+            />
 
 
       </LinearLayout>
@@ -27,7 +36,8 @@
     </LinearLayout>
 
     <ScrollView
-        style="@style/parent">
+        style="@style/parent"
+        android:layout_height="match_parent">
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="match_parent"
@@ -39,32 +49,20 @@
 
 
         <TextView
-            android:id="@+id/homeTitle"
+            android:id="@+id/linksTitle"
             style="@style/headerText"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Room title1"
-            android:layout_marginTop="40dp"/>
+            android:layout_marginTop="40dp"
+            android:text="Resource Links"
+            android:background="@color/black"/>
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
+        <ListView
+            android:id="@+id/listviewLinks"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabTextColor="@color/primaryTextColor"
-            app:tabMode="scrollable"
-            tools:ignore="MissingConstraints"
-            app:tabGravity="center"
-            >
-
-        </com.google.android.material.tabs.TabLayout>
-
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/tabLayout"
-            >
-
-        </androidx.viewpager.widget.ViewPager>
+            android:layout_height="560dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
 
       </LinearLayout>
 
