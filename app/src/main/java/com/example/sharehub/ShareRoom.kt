@@ -63,11 +63,12 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
         databaseReference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 loop@ for (h in snapshot.children) {
-                    val room =  snapshot.getValue(ShareRoomModel::class.java)
+                    val room =  h.getValue(ShareRoomModel::class.java)
                     val id = room?.id
                     if(id == roomId){
                         shareRoom = room
-                        Log.d("ShareroomFound","Shareroom "+shareRoom.title+" found.")
+                        Log.d("ShareRoomFound","Shareroom "+shareRoom.title+" found.")
+                        roomTitle.text = shareRoom.title
                         break@loop
                     }
                 }
@@ -80,56 +81,51 @@ class ShareRoom : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelec
         //Fetching resources links
         val linkList = mutableListOf<LinksModel>()
         val databaseReferenceLinks = FirebaseDatabase.getInstance().getReference("links")
-        //val databaseReference = FirebaseDatabase.getInstance().getReference("share_rooms")
-        databaseReference.child(roomId).child("links").addValueEventListener(object : ValueEventListener{
+        databaseReferenceLinks.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
+                linkList.clear()
                 for (h in snapshot.children){
-                    val linkId= h.value.toString()
-                    databaseReferenceLinks.child(linkId).addValueEventListener(object : ValueEventListener{
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            val link = snapshot.getValue(LinksModel::class.java)
-                            if (link != null) {
-                                Log.d("linksfetching","link found : " + link.title)
-                                linkList.add(link)
-                            }
+                    val link = h.getValue(LinksModel::class.java)
+                    if (link != null) {
+                        if (link.roomId == roomId){
+                            Log.d("linksFetching","link found : " + link.title)
+                            linkList.add(link)
                         }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            TODO("Not yet implemented")
-                        }
-
-                    })
+                    }
                 }
+
+                Log.d("linkList","found links in the list")
+                val tittles = mutableListOf<String>()
+                for (link in linkList){
+                    tittles.add("title")
+                }
+                //displaying links using list view
+                val myListAdapter = LinkListAdapter(this@ShareRoom,tittles,linkList)
+                Log.d("adapter","adapter object created")
+                val listviewLinks = findViewById<ListView>(R.id.listviewLinks)
+                listviewLinks.adapter = myListAdapter
+                Log.d("listAdapter","Adapter set!!!")
+
             }
+
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }
+
         })
+
         //displaying resource links
             //setting static links
-        roomTitle.text = shareRoom.title
-        val link1 = LinksModel("2","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
-        val link2 = LinksModel("3","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
-        val link3 = LinksModel("4","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
-        val link4 = LinksModel("5","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
-        val link5 = LinksModel("6","Link1","https://www.tutorialspoint.com/index.htm","2",roomId)
+        val link1 = LinksModel("2","Link1","https://www.javatpoint.com/kotlin-android-custom-listview","2",roomId)
+        val link2 = LinksModel("3","Link2","https://www.tutorialspoint.com/index.htm","2",roomId)
+        val link3 = LinksModel("4","Link3","https://www.tutorialspoint.com/index.htm","2",roomId)
+        val link4 = LinksModel("5","Link4","https://www.tutorialspoint.com/index.htm","2",roomId)
+        val link5 = LinksModel("6","Link5","www.com","2",roomId)
         linkList.add(link1)
         linkList.add(link2)
         linkList.add(link3)
         linkList.add(link4)
         linkList.add(link5)
-        Log.d("linkList","found links in the list")
-        val tittles = mutableListOf<String>()
-        for (link in linkList){
-            tittles.add("title")
-        }
-        //displaying links using list view
-        val myListAdapter = LinkListAdapter(this@ShareRoom,tittles,linkList)
-        Log.d("adapter","adapter object created")
-        val listviewLinks = findViewById<ListView>(R.id.listviewLinks)
-        listviewLinks.adapter = myListAdapter
-        Log.d("listAdapter","Adapter set!!!")
-
 
     }
 

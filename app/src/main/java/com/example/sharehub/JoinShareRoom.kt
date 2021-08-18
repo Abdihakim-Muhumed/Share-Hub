@@ -4,13 +4,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 
 class JoinShareRoom : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -32,24 +32,51 @@ class JoinShareRoom : AppCompatActivity() {
             val currentUid = auth.currentUser?.uid
             if (roomCode.isEmpty()){
                 Toast.makeText(applicationContext,"Enter Room Code !",Toast.LENGTH_LONG).show()
-
             }else{
                 //Adding room to the user table
-                val roomId = databaseReference.child(roomCode).get()
-                if (roomId.isSuccessful){
-                    if (currentUid != null) {
-                        //adding room id to user profile
-                        val databaseReferenceUser = FirebaseDatabase.getInstance().getReference("users")
-                        databaseReferenceUser?.child(currentUid)?.child("rooms")?.child(roomId.toString())?.setValue(roomId)
-                        //opening the share room activity
-                        val intent = Intent(applicationContext,ShareRoom::class.java).apply {
-                            putExtra("roomId",roomCode)
+                 databaseReference.addValueEventListener(object : ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.hasChild(roomCode)){
+                            if (currentUid != null) {
+                                //Checking if user already is a member
+                                val databaseReferenceUser = FirebaseDatabase.getInstance().getReference("users")
+                                databaseReferenceUser?.child(currentUid)?.child("rooms")?.addValueEventListener(object :ValueEventListener{
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        for (h in snapshot.children){
+                                            if (h.value == roomCode){
+                                                Toast.makeText(applicationContext,"Already a member!!!",Toast.LENGTH_LONG).show()
+                                                //opening the share room activity
+                                                val intent = Intent(applicationContext,ShareRoom::class.java).apply {
+                                                    putExtra("roomId",roomCode)
+                                                }
+                                                startActivity(intent)
+                                            }
+                                        }
+                                    }
+                                    override fun onCancelled(error: DatabaseError) {
+                                        TODO("Not yet implemented")
+                                    }
+                                })
+                                //adding roomId to user table
+                                databaseReferenceUser?.child(currentUid)?.child("rooms")?.child(roomCode).setValue(roomCode)
+                                //opening the share room activity
+                                val intent = Intent(applicationContext,ShareRoom::class.java).apply {
+                                    putExtra("roomId",roomCode)
+                                }
+                                startActivity(intent)
+                            }
                         }
-                        startActivity(intent)
+                        else {
+                            Toast.makeText(applicationContext,"Share Room does not exist!!!",Toast.LENGTH_LONG).show()
+                        }
                     }
-                }else {
-                    Toast.makeText(applicationContext,"Share Room does not exist!!!",Toast.LENGTH_LONG).show()
-                }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+
+                })
+
             }
         }
         //if user wants to create a room instead of joining one

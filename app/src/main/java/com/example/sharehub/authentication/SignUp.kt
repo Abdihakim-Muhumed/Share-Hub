@@ -109,7 +109,7 @@ class SignUp : AppCompatActivity() {
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Registration failed. Try Again!",
+                    Toast.makeText(baseContext, "Registration failed. "+ task.exception?.message,
                         Toast.LENGTH_SHORT).show()
                 }
             }
